@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="script/sea.js"></script>
+
+    <script src="script/jquery-1.7.js"></script>
+    <!--<script src="http://localhost:8080/socket.io/socket.io.js"></script>-->
+            <script src="script/socket.io.js"></script>
+</head>
+<body>
+           <script>
+//               seajs.config({
+//                   //相对标识永远相对当前模块的 URI 来解析
+//                   //此处使用相对路径，则是相对于当前页面的路径
+//                   base: './'
+//               });
+//                         seajs.use("main", function(main){
+//                              main.init();
+//                         })
+
+
+$(function(){
+//    console.log(io);
+    var iosocket = io.connect("http://localhost:8080");
+
+    iosocket.on('connect', function () {
+        $('#incomingChatMessages').append($('<li>Connected</li>'));
+
+        iosocket.on('message', function(message) {
+            $('#incomingChatMessages').append($('<li></li>').text(message));
+        });
+        iosocket.on('disconnect', function() {
+            $('#incomingChatMessages').append('<li>Disconnected</li>');
+        });
+    });
+
+    $('#outgoingChatMessage').keypress(function(event) {
+        if(event.which == 13) {
+            event.preventDefault();
+
+            iosocket.send($('#outgoingChatMessage').val());
+
+            $('#incomingChatMessages').append($('<li></li>').text($('#outgoingChatMessage').val()));
+            $('#outgoingChatMessage').val('');
+        }
+    });
+});
+
+           </script>
+           Incoming Chat:&nbsp;<ul id="incomingChatMessages"></ul>
+           <br />
+           <input type="text" id="outgoingChatMessage">
+
+</body>
+</html>
