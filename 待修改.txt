@@ -1,0 +1,1 @@
+main.js的配置的boolean属性以isxxx开头
