@@ -1,0 +1,109 @@
+" set gdefault
+" set ignorecase
+"
+
+
+noremap <f1> :n
+noremap <f2> :N
+
+
+
+"
+" " ============================================================================
+" " Movement
+" " ============================================================================
+"
+" " Scroll screen with the cursor
+" noremap <C-j> gj<C-e>
+" noremap <C-k> gk<C-y>
+"
+" " Left / right
+" noremap <C-h> h
+" noremap <C-l> l
+"
+ " Insert mode
+ inoremap <C-k> <Up>
+ inoremap <C-j> <Down>
+ inoremap <C-l> <Right>
+ inoremap <C-h> <Left>
+"
+" " Previous / next match
+" noremap H ,
+" noremap L ;
+"
+" " Home row beginning / end of line
+" noremap h ^
+" noremap l $
+"
+" " Previous / next word
+" noremap k #
+" noremap j *
+"
+" " ============================================================================
+" " Editing
+" " ============================================================================
+"
+" " Escape
+" inoremap jk <Esc>`^
+" inoremap <C-q> <Esc>`^
+" noremap <C-q> <Esc>
+" vnoremap <C-q> <Esc>
+" cmap <C-q> <C-c>
+"
+" " Moving blocks of text in visual mode
+" vnoremap < <gv
+" vnoremap > >gv
+"
+" " Select all text
+" map <Space>a ggVG
+"
+" " Copy until the end of the line
+" noremap Y y$
+"
+" " Indent everything
+" noremap <Space>I ggvG=
+"
+" " Indent selection in visual mode
+" vnoremap <Space>i =
+"
+" " Indent the current line
+" noremap <Space>i v=
+"
+" " Change current word - kill
+" noremap K ciw
+"
+" " Change in double quotes
+" noremap J ci"
+"
+" " Join lines
+" nnoremap <Space>J J
+"
+"
+" " ============================================================================
+" " Editor control
+" " ============================================================================
+"
+" " Enter the command-line mode
+" noremap <CR> :
+"
+" " Reload .ideavimrc
+" nnoremap <Space>vs :source ~/.ideavimrc<CR>
+"
+"
+" " ============================================================================
+" " ide actions
+" " ============================================================================
+"
+" nnoremap / :action find<cr>
+" nnoremap n :action findnext<cr>
+" nnoremap n :action findprevious<cr>
+" nnoremap u :action $redo<cr>
+" nnoremap ; :action acejumpaction<cr>
+" nnoremap <space>o :action gotoclass<cr>
+" nnoremap <space>o :action gotofile<cr>
+" nnoremap <space>d :action closecontent<cr>
+" nnoremap <space>j :action recentfiles<cr>
+" nnoremap <space>k :action filestructurepopup<cr>
+" nnoremap <space>h :action quickjavadoc<cr>
+
+nnoremap <alt>1 :action OpenProjectWindows<cr>
