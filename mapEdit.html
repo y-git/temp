@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>地图编辑器YMapEdit v0.1 作者：YYC</title>
+    <meta content="text/html" charset="utf-8">
+
+    <style type="text/css">
+        input[type=text] {
+            width: 50px;
+        }
+
+        .inline_block {
+            display: -moz-inline-stack;
+            display: inline-block;
+            *display: inline;
+            zoom: 1;
+            vertical-align: top;
+            font-size: 16px;
+        }
+
+        .mapArea {
+            position: relative;
+            width: 700px;
+            height: 430px;
+        }
+
+        .mapArea canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        #firstMenu p {
+            display: none;
+        }
+    </style>
+
+    <!--依赖库-->
+    <script src="../script/myTool/tool/YTool.js"></script>
+
+    <script src="../script/myTool/html5/file.js"></script>
+
+</head>
+
+<body onselectstart="return false">
+<div style="margin:0 auto;width:500px;height:50px;">
+    <p>地图编辑器YMapEdit v0.1 作者：YYC</p>
+</div>
+<div style="margin:0 auto;width:1100px;height:700px;border: 1px solid red;">
+    <div style="width: 100%;height:100px;border: 1px solid blue;">
+        <!--<input type="text" value="地图大小" style="width:100px;"/>-->
+        <span>初始资源数</span>
+        <input id="meat" type="text" value="0"/>
+        <span>视口位置</span>
+        <input id="startX" type="text" value=""/>
+        <input id="startY" type="text" value=""/>
+        <span>地图大小</span>
+        <input id="mapSize" type="text" value=""/>
+        <span>背景地图元素</span>
+        <select>
+            <option value="grass">草地</option>
+            <option value="desert">沙漠</option>
+        </select>
+
+        <input id="createMap" type="button" value="创建背景地图"/>
+
+
+        <input id="export" type="button" value="导出地图数据"/>
+
+        <p id="addItem">
+            <input type="button" value="加入地图元素"/>
+            <input type="button" value="加入地形精灵"/>
+            <input type="button" value="加入资源"/>
+            <input type="button" value="加入建筑"/>
+            <input type="button" value="加入单位"/>
+        </p>
+    </div>
+    <div style="font-size: 0px;width: 100%;height:600px;border: 1px solid black;">
+        <div style="width:700px;height:100%; border: 1px solid black;position: relative;"
+             class="inline_block">
+            <div class="mapArea">
+                <canvas id="effectLayerCanvas" width="700" height="430" style="border:1px solid green;"></canvas>
+                <canvas id="mapLayerCanvas" width="700" height="430" style="border:1px solid red;"></canvas>
+                <canvas id="entityLayerCanvas" width="700" height="430" style="border:1px solid green;"></canvas>
+            </div>
+            <!--<div style="width:700px;height:430px;border: 1px solid red;"></div>-->
+            <div id="secondMenu" style="width:100%;height:170px;border: 1px solid blue;"></div>
+        </div>
+        <div id="firstMenu" style="width:350px;height:100%; border: 1px solid blue;" class="inline_block">
+            <p>
+                <span>地图元素：</span>
+                <select id="mapElement">
+                    <option value="grass">草地</option>
+                    <option value="desert">沙漠</option>
+                    <option value="road">道路</option>
+                    <option value="water">水</option>
+                </select>
+            </p>
+
+            <p>
+                <span>地形精灵：</span>
+                <select id="terrainSprite">
+                    <option value="moutain">山</option>
+                    <option value="plants">植物</option>
+                </select>
+            </p>
+            <p>
+                <span>资源：</span>
+                <select id="resource">
+                    <option value="food">食物</option>
+                </select>
+                <span>资源数量：</span>
+                <input type="text" value="100"/>
+            </p>
+
+            <p>
+                <span>建筑：</span>
+
+                <select id="building">
+                    <option value="base" team="blue">蓝色基地</option>
+                    <option value="shootingRange" team="blue">蓝色射击场</option>
+                    <option value="tower" team="blue">蓝色箭塔</option>
+                    <option value="base" team="red">红色基地</option>
+                    <option value="shootingRange" team="red">红色射击场</option>
+                    <option value="tower" team="red">红色箭塔</option>
+                </select>
+            </p>
+
+            <p>
+                <span>单位：</span>
+                <select id="unit">
+                    <option value="farmer" team="blue">蓝色农民</option>
+                    <option value="archer" team="blue">蓝色弓箭手</option>
+                    <option value="archer" team="red">红色弓箭手</option>
+                </select>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="../script/yEngine2D/main.js"></script>
+
+<script>
+    YE.main.setConfig({
+        engineDir: "../script/yEngine2D/",
+        userFilePaths: [
+            "../script/jquery-1.7.js",
+
+            "../mapEdit/LevelManager.js",
+            "../mapEdit/layer/MapRoll.js",
+            "../mapEdit/layer/MapLayer.js",
+            "../mapEdit/layer/EffectLayer.js",
+            "../mapEdit/layer/EntityLayer.js",
+            "../mapEdit/Scene.js",
+
+            "../mapEdit/Sprite.js",
+            "../mapEdit/sprite/TerrainSprite.js",
+            "../mapEdit/sprite/MoutainSprite.js",
+            "../mapEdit/sprite/PlantsSprite.js",
+            "../mapEdit/sprite/SelectableSprite.js",
+            "../mapEdit/sprite/ResourceSprite.js",
+            "../mapEdit/sprite/FoodSprite.js",
+            "../mapEdit/sprite/EntitySprite.js",
+            "../mapEdit/sprite/BuildingSprite.js",
+            "../mapEdit/sprite/BaseSprite.js",
+            "../mapEdit/sprite/ShootingRangeSprite.js",
+            "../mapEdit/sprite/TowerSprite.js",
+            "../mapEdit/sprite/CharacterSprite.js",
+            "../mapEdit/sprite/FarmerSprite.js",
+            "../mapEdit/sprite/ArcherSprite.js",
+
+            "../mapEdit/algorithm/shadeAlgorithm.js",
+
+            "../mapEdit/config.js",
+            "../mapEdit/data/resourceTable.js",
+            "../mapEdit/tool.js",
+
+            "../mapEdit/data/mapData.js",
+
+            "../mapEdit/ui.js"
+        ],
+        onload: function () {
+            init();
+
+            function init() {
+                $("#startX").val(300);
+                $("#startY").val(1350);
+                $("#mapSize").val(config.map.mapGridWidth);
+
+                _bingEvent();
+            }
+
+
+            function _bingEvent() {
+                $("#createMap").click(function () {
+                    _setMapDataFromSettingData(mapData);
+                    mapData.backgroundElement = $(this).prev("select").val();
+                    mapData.mapGridWidth = Number($("#mapSize").val());
+                    mapData.mapGridHeight = Number($("#mapSize").val());
+
+                    LevelManager.getInstance().start();
+                });
+
+                $("#export").click(function () {
+                    _setMapDataFromSettingData(mapData);
+
+                    var content = YYC.Tool.extend.extendExist({
+                        meat: 0,
+                        startX: 0,
+                        startY: 0,
+                        //地图元素数据
+                        mapElement: [],
+                        //地形数据
+                        terrain: [],
+
+                        items: {},
+                        requirements: {}
+                    }, mapData);
+
+                    YYC.Html5.file.createFileAndDownload(YYC.Tool.convert.toString(content), "application/x-javascript", "levelData.js");
+                });
+
+                $("#firstMenu select").change(function () {
+                    mapData.selectValue = $(this).val();
+                    mapData.isSelectChange = true;
+                });
+                $("#unit").change(function () {
+                    mapData.isSelectUnitChange = true;
+                });
+
+
+                $("#addItem input:eq(0)").click(function () {
+                    _hideAllMenu();
+                    $("#firstMenu p:eq(0)").show();
+
+                    mapData.selectCategory = category.TERRAIN;
+                    mapData.selectValue = $("#mapElement").val();
+                });
+
+                $("#addItem input:eq(1)").click(function () {
+                    _hideAllMenu();
+                    $("#firstMenu p:eq(1)").show();
+
+                    mapData.selectCategory = category.TERRAINSPRITE;
+                    mapData.selectValue = $("#terrainSprite").val();
+                });
+                $("#addItem input:eq(2)").click(function () {
+                    _hideAllMenu();
+                    $("#firstMenu p:eq(2)").show();
+
+                    mapData.selectCategory = category.RESOURCE;
+                    mapData.selectValue = $("#resource").val();
+                });
+                $("#addItem input:eq(3)").click(function () {
+                    _hideAllMenu();
+                    $("#firstMenu p:eq(3)").show();
+
+                    mapData.selectCategory = category.BUILDING;
+                    mapData.selectValue = $("#building").val();
+                });
+                $("#addItem input:eq(4)").click(function () {
+                    _hideAllMenu();
+                    $("#firstMenu p:eq(4)").show();
+
+                    mapData.selectCategory = category.UNIT;
+                    mapData.selectValue = $("#unit").val();
+                });
+            }
+
+            function _setMapDataFromSettingData(mapData){
+                mapData.meat = Number($("#meat").val());
+                mapData.startX = Number($("#startX").val());
+                mapData.startY = Number($("#startY").val());
+            }
+
+            function _hideAllMenu() {
+                $("#firstMenu p").hide();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

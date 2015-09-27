@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>动画编辑器YAnimEdit v0.1 作者：YYC</title>
+    <meta content="text/html" charset="utf-8">
+
+    <!--依赖库-->
+    <script src="../script/jquery-1.7.js"></script>
+
+    <script src="../script/yEngine2D/import/YOOP.js"></script>
+    <script src="../script/yEngine2D/import/jsExtend.js"></script>
+
+    <script src="../script/myTool/tool/YTool.js"></script>
+
+    <script src="../script/myTool/html5/file.js"></script>
+
+    <!--yEngine2D-->
+    <script src="../script/yEngine2D/main.js"></script>
+    <script src="../script/yEngine2D/tool/Tool.js"></script>
+
+
+
+    <script src="../script/yEngine2D/base/Entity.js"></script>
+
+    <script src="../script/yEngine2D/structure/Hash.js"></script>
+    <script src="../script/yEngine2D/structure/Collection.js"></script>
+
+    <script src="../script/yEngine2D/loader/Loader.js"></script>
+    <script src="../script/yEngine2D/loader/LoaderManager.js"></script>
+    <script src="../script/yEngine2D/loader/ImgLoader.js"></script>
+
+
+    <!--js-->
+    <script src="../animEdit/data/globalData.js"></script>
+    <script src="../animEdit/data/exportData.js"></script>
+    <script src="../animEdit/index.js"></script>
+    <script src="../animEdit/Anim.js"></script>
+    <script src="../animEdit/Frame.js"></script>
+    <script src="../animEdit/showAnimFrameImg.js"></script>
+    <script src="../animEdit/tool.js"></script>
+    <script src="../animEdit/open.js"></script>
+    <script src="../animEdit/exportFile.js"></script>
+    <script src="../animEdit/MultipleSelect.js"></script>
+
+
+    <style type="text/css">
+        .inline_block {
+            display: -moz-inline-stack;
+            display: inline-block;
+            *display: inline;
+            zoom: 1;
+            vertical-align: top;
+        }
+
+        .inline_block {
+            font-size: 16px;
+        }
+
+        #allFrameList .multipleSelect {
+            background: #F2AE1C;
+        }
+
+        #animList .multipleSelect {
+            background: skyblue;
+        }
+
+            /*水平翻转*/
+            /*.flipX {*/
+            /*-moz-transform: scaleX(-1);*/
+            /*-webkit-transform: scaleX(-1);*/
+            /*-o-transform: scaleX(-1);*/
+            /*transform: scaleX(-1);*/
+            /*IE*/
+            /*filter: FlipH;*/
+            /*}*/
+
+            /*垂直翻转*/
+            /*.flipY {*/
+            /*-moz-transform: scaleY(-1);*/
+            /*-webkit-transform: scaleY(-1);*/
+            /*-o-transform: scaleY(-1);*/
+            /*transform: scaleY(-1);*/
+            /*IE*/
+            /*filter: FlipV;*/
+            /*}*/
+
+        #info {
+            color: blue;
+        }
+
+        #error {
+            color: red;
+        }
+
+        #secondMenu input[type=text] {
+            width: 50px;
+        }
+
+        #multipleAnimData{
+            display: none;
+        }
+        #multipleAnimData p{
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+<div style="margin:0 auto;width:500px;height:50px;">
+    <p>动画编辑器YAnimEdit v0.1 作者：YYC</p>
+</div>
+<div style="margin:0 auto;width:1400px;height:550px;border: 1px solid red;">
+    <div style="width: 100%;height:50px;border: 1px solid blue;">
+        <input type="text" value="动画名" style="width:300px;"/> <input id="createAnim" type="button" value="新建动画"/>
+        <!--<input type="button" value="播放动画"/>-->
+        <input id="export" type="button" value="导出"/>
+
+        <input id="open" type="button" value="打开文件（帧数据文件、sprite sheet图片、动画数据文件）"/>
+        <!--<input type="button" value="打开sprite sheet图片"/>-->
+        <!-- file input 本来是用display:none; 隐藏，结果发现在ie下无法激活打开文件窗口，所以改为用位置关系隐藏 -->
+        <input id="file" type="file" multiple style="position: absolute;left: -10000px;"/>
+    </div>
+    <div style="font-size: 0px;width: 100%;height:500px;border: 1px solid black;">
+
+        # 禁止鼠标拖动，以免使用shift多选时，有蓝色框选效果 onselectstart="return false"
+        <div onselectstart="return false"
+             style="overflow: auto;padding-left: 10px; width:400px;height:100%; border: 1px solid red;"
+             class="inline_block">
+            <div id="animList">
+                <ul></ul>
+            </div>
+            <div id="allFrameList">
+            </div>
+        </div>
+        <div id="showImage" style="overflow: auto;width:600px;height:100%; border: 1px solid black;"
+             class="inline_block">
+            <canvas id="showAnimFrameCanvas" style="border:5px solid black"></canvas>
+            <!--<div id="showAnimFrameImage" style="padding-left: 200px; padding-top: 100px;"></div>-->
+        </div>
+        <div style="width:340px;height:100%; border: 1px solid blue;" class="inline_block">
+            <div id="firstMenu">
+                <span>帧</span><input type="text" value="起始序号"/><span>到</span> <input type="text" value="结束序号"/>
+                <span>移动到指定动画</span><input id="animNameText" type="text" value="动画名" style="width:300px;"/>
+                <input id="moveFrame" type="button" value="移动">
+            </div>
+            <div id="secondMenu" style="display: none;">
+                <div id="singleAnimData">
+                    <!--<input id="animName" type="hidden"/>-->
+
+                    <p>
+                        <span>偏移X</span><input id="pixelX" type="text" value="0"/>
+                        <span>偏移Y</span> <input id="pixelY" type="text" value="0"/></p>
+
+                    <p><input id="flipX" type="checkbox"/><label for="flipX">水平翻转</label>
+                        <input id="flipY" type="checkbox"/><label for="flipY">垂直翻转</label></p>
+
+                    <p><span>间隔时间</span> <input id="duration" type="text" value="0.1"/></p>
+
+                    <p><span>重复次数</span> <input id="repeatNum" type="text" value="-1"/></p>
+
+                    <p>
+                        <span>显示宽度</span> <input id="showWidth" type="text" value="-1"/>
+                        <span>显示高度</span> <input id="showHeight" type="text" value="-1"/>
+                    </p>
+                </div>
+
+                <div id="multipleAnimData">
+                    <div>
+                        <input type="button" value="设置偏移"/>
+                    </div>
+                    <p>
+                        <span>偏移X</span><input id="multi_pixelX" type="text" value="0"/>
+                        <span>偏移Y</span> <input id="multi_pixelY" type="text" value="0"/>
+                    </p>
+
+                    <div>
+                        <input type="button" value="设置翻转"/>
+                    </div>
+                    <p>
+                        <input id="multi_flipX" type="checkbox"/><label for="multi_flipX">水平翻转</label>
+                        <input id="multi_flipY" type="checkbox"/><label for="multi_flipY">垂直翻转</label></p>
+
+                    <div>
+                        <input type="button" value="设置间隔时间"/>
+                    </div>
+                    <p><span>间隔时间</span> <input id="multi_duration" type="text" value="0.1"/></p>
+
+                    <div>
+                        <input type="button" value="设置重复次数"/>
+                    </div>
+                    <p><span>重复次数</span> <input id="multi_repeatNum" type="text" value="-1"/></p>
+
+                    <div>
+                        <input type="button" value="设置显示大小"/>
+                    </div>
+                    <p>
+                        <span>显示宽度</span> <input id="multi_showWidth" type="text" value="-1"/>
+                        <span>显示高度</span> <input id="multi_showHeight" type="text" value="-1"/>
+                    </p>
+                </div>
+
+                <p><input id="saveAnimData" type="button" value="保存动画设置"></p>
+            </div>
+            <div id="info">
+            </div>
+            <div id="error">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        index.init();
+    });
+
+</script>
+</body>
+</html>
